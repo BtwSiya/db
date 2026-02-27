@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toxic API Documentation</title>
+    <title>Toxic API Doc</title>
     <style>
         /* CSS Variables for Dark Blue Glassmorphism Theme */
         :root {
@@ -410,7 +410,7 @@
             
             <div class="endpoint-container">
                 <span class="method">GET</span>
-                <span class="url">https://toxiclabs.xyz/api</span>
+                <span class="url">https://api.toxiclabs.xyz</span>
             </div>
             
             <h3>Query Parameters</h3>
@@ -443,7 +443,7 @@
 
             <h3>Success Response Sample <span class="status-badge status-200">200 OK</span></h3>
             <pre><code>{
-  <span class="str">"phone"</span>: <span class="str">"917278666854"</span>,
+  <span class="str">"phone"</span>: <span class="str">"9172786**854"</span>,
   <span class="str">"fb_id"</span>: <span class="str">"100018888067191"</span>,
   <span class="str">"first_name"</span>: <span class="str">"Bapi"</span>,
   <span class="str">"last_name"</span>: <span class="str">"Saha"</span>,
@@ -458,7 +458,7 @@
 
         <section id="error-codes" class="card glass-panel">
             <h2>Standard Error Codes</h2>
-            <p>Our API uses standard HTTP response codes to indicate the success or failure of an API request.</p>
+            <p>Our API uses standard HTTPS response codes to indicate the success or failure of an API request.</p>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -500,7 +500,7 @@
             <h3>Python (Requests)</h3>
             <pre><code><span class="kw">import</span> requests
 
-url = <span class="str">"https://toxiclabs.xyz/api"</span>
+url = <span class="str">"https://api.toxiclabs.xyz"</span>
 params = {
     <span class="str">"key"</span>: <span class="str">"YOUR_SECRET_KEY"</span>,
     <span class="str">"query"</span>: <span class="str">"100018888067191"</span>
@@ -512,10 +512,10 @@ response = requests.get(url, params=params)
 <span class="kw">else</span>:
     print(<span class="str">f"Error: {response.status_code}"</span>)</code></pre>
 
-            <h3>Node.js (Axios)</h3>
+            <h3>Node.js</h3>
             <pre><code><span class="kw">const</span> axios = require(<span class="str">'axios'</span>);
 
-axios.get(<span class="str">'https://toxiclabs.xyz/api'</span>, {
+axios.get(<span class="str">'https://api.toxiclabs.xyz'</span>, {
   params: {
     key: <span class="str">'YOUR_SECRET_KEY'</span>,
     query: <span class="str">'test@email.com'</span>
@@ -529,13 +529,13 @@ axios.get(<span class="str">'https://toxiclabs.xyz/api'</span>, {
 
         <section id="security">
             <div class="warning-box glass-panel">
-                <strong>[!] Toxic Security Protocol Active</strong>
+                <strong>⚠️ Toxic Security Protocol Active</strong>
                 <p>Certain User IDs and profiles are protected under the Toxic Security framework. Any query targeting a <code class="inline">/protect</code> registered ID will automatically trigger a null response. Continuous attempts to breach protected data will result in the requesting IP and Telegram ID being permanently blacklisted from the nodes.</p>
             </div>
         </section>
 
         <footer style="text-align: center; color: var(--text-muted); padding: 30px 0; font-size: 0.9rem; border-top: 1px solid var(--glass-border);">
-            &copy; 2026 ToxicLabs Security Operations. All systems normal.
+            &copy; 2026 Toxic Security Operations. All systems normal.
         </footer>
     </main>
 
