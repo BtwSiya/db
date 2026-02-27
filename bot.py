@@ -45,7 +45,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
         [InlineKeyboardButton("🔍 Lookup Target", callback_data='lookup')],
-        [InlineKeyboardButton("📚 API Details", url='https://toxiclabs.xyz/api')]
+        [InlineKeyboardButton("📚 API Details", url='https://api.toxiclabs.xyz')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
@@ -76,7 +76,7 @@ async def protect_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     if not context.args:
-        await update.message.reply_text("⚠️ *Syntax:* `/protect <fb_id>`", parse_mode='Markdown')
+        await update.message.reply_text("⚠️ *Example:* `/protect <fb_id>`", parse_mode='Markdown')
         return
 
     target_id = context.args[0]
@@ -84,7 +84,7 @@ async def protect_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ ID `{target_id}` is now securely protected.")
     await send_log(context, f"Admin Protected ID: {target_id}")
 
-# --- ADVANCED ROUTING LOGIC ---
+
 async def execute_search(update: Update, context: ContextTypes.DEFAULT_TYPE, query: str):
     user = update.effective_user
     clean_query = query.replace("+", "").replace(" ", "").strip()
@@ -94,38 +94,33 @@ async def execute_search(update: Update, context: ContextTypes.DEFAULT_TYPE, que
 
     search_param = ""
 
-    # 1. EMAIL DETECTION
     if "@" in query:
         search_param = query
-        await processing_msg.edit_text("⚙️ *ANALYZING EMAIL ADDRESS...*\n_Scanning ToxicLabs Global Database..._", parse_mode='Markdown')
+        await processing_msg.edit_text("⚙️ *ANALYZING EMAIL ADDRESS...*\n\n_Scanning Toxic Global Database..._", parse_mode='Markdown')
 
-    # 2. PHONE / NUMERIC ID DETECTION
     elif clean_query.isdigit():
         if len(clean_query) == 10:
             search_param = f"91{clean_query}"
-            await processing_msg.edit_text(f"⚙️ *FORMATTING PHONE NUMBER...*\n_Added +91 code. Scanning database..._", parse_mode='Markdown')
+            await processing_msg.edit_text(f"⚙️ *FORMATTING PHONE NUMBER...*\n\n_Scanning database..._", parse_mode='Markdown')
         else:
             search_param = clean_query
-            await processing_msg.edit_text("⚙️ *PROCESSING NUMERIC ID/PHONE...*\n_Scanning ToxicLabs Global Database..._", parse_mode='Markdown')
+            await processing_msg.edit_text("⚙️ *PROCESSING NUMERIC ID/PHONE...*\n\n_Scanning Toxic Global Database..._", parse_mode='Markdown')
 
-    # 3. USERNAME DETECTION (Alphanumeric, no @)
     else:
-        await processing_msg.edit_text("⚙️ *EXTRACTING TARGET UID...*\n_Resolving alias to internal Facebook ID..._", parse_mode='Markdown')
+        await processing_msg.edit_text("⚙️ *EXTRACTING TARGET UID...*\n\n_Resolving alias to internal Facebook ID..._", parse_mode='Markdown')
         resolved_id = resolve_username_to_id(query)
         if resolved_id:
             search_param = resolved_id
-            await processing_msg.edit_text(f"✅ *TARGET ACQUIRED:* `{search_param}`\n_Decrypting database records..._", parse_mode='Markdown')
+            await processing_msg.edit_text(f"✅ *TARGET ACQUIRED:* `{search_param}`\n\n_Decrypting database records..._", parse_mode='Markdown')
         else:
-            await processing_msg.edit_text("⚠️ *RESOLUTION FAILED*\n_Unable to extract UID from alias. Please provide the exact FB ID, Phone, or Email._", parse_mode='Markdown')
+            await processing_msg.edit_text("⚠️ *RESOLUTION FAILED*\n\n_Unable to extract UID from alias. Please provide the exact FB ID, Phone, or Email._", parse_mode='Markdown')
             return
 
-    # Protection Check
     if search_param in PROTECTED_IDS or query in PROTECTED_IDS:
-        await processing_msg.edit_text("🛡️ *SECURITY BREACH BLOCKED*\n_Target data is strictly protected by ToxicLabs Protocol. Access Denied._", parse_mode='Markdown')
-        await send_log(context, f"Blocked Query Attempt:\nUser: @{user.username}\nTarget: {query}")
+        await processing_msg.edit_text("🛡️ *SECURITY BREACH BLOCKED*\n\n_Target data is strictly protected by Toxic Protocol. Access Denied._", parse_mode='Markdown')
+        await send_log(context, f"Blocked Query Attempt:\n\nUser: @{user.username}\n\nTarget: {query}")
         return
 
-    # Database API Call
     try:
         payload = {"key": API_KEY, "query": search_param}
         response = requests.get(API_URL, params=payload, timeout=20)
@@ -144,36 +139,33 @@ async def execute_search(update: Update, context: ContextTypes.DEFAULT_TYPE, que
                 f"💍 *Status:* `{data.get('relationship', 'N/A')}`\n"
                 f"⏱️ *Data Timestamp:* `{data.get('timestamp', 'N/A')}`\n"
                 f"━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-                f"🔒 _Secured by ToxicLabs_"
+                f"🔒 _Secured by Toxic_"
             )
-            keyboard = [[InlineKeyboardButton("🗑️ Close Intel", callback_data='clear')]]
+            keyboard = [[InlineKeyboardButton("🗑️ Close", callback_data='clear')]]
             await processing_msg.edit_text(result_text, parse_mode='Markdown', reply_markup=InlineKeyboardMarkup(keyboard))
-            await send_log(context, f"Data Successfully Retrieved:\nTarget: {search_param}\nRequested by: @{user.username}")
+            await send_log(context, f"Data Successfully Retrieved:\n\nTarget: {search_param}\n\nRequested by: @{user.username}")
         else:
-            await processing_msg.edit_text("📭 *NO RECORDS FOUND*\n_Target does not exist in the current database index._", parse_mode='Markdown')
+            await processing_msg.edit_text("📭 *NO RECORDS FOUND*\n\n_Target does not exist in the current database index._", parse_mode='Markdown')
 
     except Exception as e:
-        await processing_msg.edit_text("🛰️ *CONNECTION LOST*\n_API Offline or Connection Timeout. Try again._", parse_mode='Markdown')
+        await processing_msg.edit_text("🛰️ *CONNECTION LOST*\n\n_API Offline or Connection Timeout. Try again._", parse_mode='Markdown')
         await send_log(context, f"API Error: {str(e)}")
 
-# GROUP COMMAND HANDLER (/find <query>)
 async def find_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message:
         return
         
     if not context.args:
-        await update.message.reply_text("⚠️ *SYNTAX ERROR*\n_Usage:_ `/find <username/phone/id/email>`", parse_mode='Markdown')
+        await update.message.reply_text("⚠️ *Dem Bro*\n\n_Usage:_ `/find <username/phone/id/email>`", parse_mode='Markdown')
         return
         
     query = " ".join(context.args).strip()
     await execute_search(update, context, query)
 
-# PRIVATE MESSAGE HANDLER (Direct texts)
 async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message or not update.message.text:
         return
         
-    # Ignore regular texts if they are sent in a group (forces users to use /find)
     if update.message.chat.type != 'private':
         return
         
@@ -181,7 +173,6 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     await execute_search(update, context, query)
 
 def main():
-    # Proxy fix included
     t_request = HTTPXRequest(connection_pool_size=20, read_timeout=20)
     app = Application.builder().token(BOT_TOKEN).request(t_request).build()
     
@@ -189,7 +180,7 @@ def main():
     app.add_handler(CommandHandler("protect", protect_user))
     app.add_handler(CommandHandler("find", find_command)) 
     app.add_handler(CallbackQueryHandler(button_handler))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, private_text_handler)) # Direct DM handler
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, private_text_handler))
     
     print("Toxic Security Bot is running smoothly with Smart Routing...")
     app.run_polling()
