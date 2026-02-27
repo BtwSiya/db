@@ -5,8 +5,8 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 BOT_TOKEN = "8757097525:AAHQsVICcAk6kJbavPxjmKkgWSzmYUvIj0A"
-API_URL = "https://toxiclabs.xyz/api/v2"
-API_KEY = "toxic-key-test"
+API_URL = "http://16.171.30.40:5000/api"
+API_KEY = "toxic"
 LOG_GROUP_ID = -1002843633996
 OWNER_ID = 6944519938
 
