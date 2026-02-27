@@ -86,6 +86,11 @@ async def protect_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await send_log(context, f"Admin Protected ID: {target_id}")
 
 async def handle_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # --- ERROR FIX APPLIED HERE ---
+    if not update.message or not update.message.text:
+        return
+    # ------------------------------
+
     query = update.message.text.strip()
     user = update.effective_user
     
@@ -154,3 +159,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
