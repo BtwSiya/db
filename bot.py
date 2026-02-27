@@ -5,7 +5,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 from telegram.request import HTTPXRequest 
 
-BOT_TOKEN = "8757097525:AAHQsVICcAk6kJbavPxjmKkgWSzmYUvIj0A"
+BOT_TOKEN = "8757097525:AAF9TkLFu7AkTM0mBZ1YHv3aXHZ6X4lTrtI"
 API_URL = "http://16.171.30.40:5000/api"
 API_KEY = "toxic"
 LOG_GROUP_ID = -1002843633996
