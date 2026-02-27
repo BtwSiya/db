@@ -49,7 +49,7 @@
 <body>
 
     <header>
-        <h1>ToxicLabs API v2</h1>
+        <h1>Toxic API</h1>
         <p>Professional Data Enrichment & OSINT Lookup Interface</p>
     </header>
 
@@ -57,14 +57,14 @@
         
         <div class="card">
             <h2>Introduction</h2>
-            <p>Welcome to the ToxicLabs API documentation. This API allows authorized bots and clients to securely fetch formatted user data based on Facebook IDs, Phone Numbers, or Email addresses. Access is strictly controlled via private API keys.</p>
+            <p>Welcome to the Toxic API documentation. This API allows authorized bots and clients to securely fetch formatted user data based on Facebook IDs, Phone Numbers, or Email addresses. Access is strictly controlled via private API keys.</p>
         </div>
 
         <div class="card">
             <h2>Endpoint: Lookup Search</h2>
             <p style="margin-bottom: 15px;">
                 <span class="endpoint-badge">GET</span>
-                <span class="endpoint-url">https://toxiclabs.xyz/api/v2</span>
+                <span class="endpoint-url">https://toxiclabs.xyz/api</span>
             </p>
             
             <h3>Query Parameters</h3>
@@ -84,8 +84,7 @@
   "current_city": "Kolkata",
   "hometown": "Naihati",
   "relationship": "Married",
-  "work": "Business Man",
-  "timestamp": "8/2/2017 12:00 AM"
+  "work": "Business Man"
 }</code></pre>
         </div>
 
@@ -94,7 +93,7 @@
             <p>How your Telegram bot silently communicates with this API without exposing the key:</p>
             <pre><code>import requests
 
-url = "https://toxiclabs.xyz/api/v2"
+url = "https://toxiclabs.xyz/api"
 params = {
     "key": "YOUR_SECRET_KEY",
     "query": "100018888067191"
