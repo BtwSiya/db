@@ -4,32 +4,40 @@ import re
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-BOT_TOKEN = ""
+BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
 API_URL = "https://toxiclabs.xyz/api/v2"
-API_KEY = "" 
-LOG_GROUP_ID = 
-OWNER_ID = 
+API_KEY = "YOUR_HIDDEN_SECRET_KEY"
+LOG_GROUP_ID = -100123456789
+OWNER_ID = 123456789
 
-# In-memory protection list (Use SQLite for permanent storage later)
 PROTECTED_IDS = set()
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-# --- HELPER FUNCTIONS ---
 async def send_log(context: ContextTypes.DEFAULT_TYPE, message: str):
-    """Sends action logs to the admin group."""
     try:
         await context.bot.send_message(chat_id=LOG_GROUP_ID, text=f"🔒 [SYSTEM LOG]\n{message}")
     except Exception as e:
         logging.error(f"Failed to send log: {e}")
 
 def resolve_username_to_id(username: str) -> str:
-    """Mock function to convert FB username to ID."""
-    # Yaha aapko username se ID nikalne ka apna API endpoint ya scraping logic dalna hoga
-    # Example: return requests.get(f"https://api.xyz/get_id?username={username}").json()['id']
-    return "100018888067191" # Placeholder ID
+    try:
+        url = f"https://www.facebook.com/{username}"
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        response = requests.get(url, headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            match = re.search(r'"userID":"(\d+)"', response.text)
+            if match:
+                return match.group(1)
+            
+            match_alt = re.search(r'content="fb://profile/(\d+)"', response.text)
+            if match_alt:
+                return match_alt.group(1)
+    except Exception:
+        pass
+    return ""
 
-# --- BOT COMMANDS ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     await send_log(context, f"User Started Bot:\nName: {user.full_name}\nUsername: @{user.username}\nID: {user.id}")
@@ -52,7 +60,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(welcome_text, parse_mode='Markdown', reply_markup=reply_markup)
 
 async def protect_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Owner command to protect specific IDs."""
     if update.effective_user.id != OWNER_ID:
         return
     
@@ -70,30 +77,30 @@ async def handle_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     
     await send_log(context, f"Query Executed:\nUser: @{user.username} ({user.id})\nSearch Term: {query}")
-    
     processing_msg = await update.message.reply_text("🔄 *Encrypting connection & scanning database...*", parse_mode='Markdown')
 
-    # Input Parsing
     search_param = query
     if "@" not in query and not query.isdigit():
-        # It's likely a username, convert to ID
         await processing_msg.edit_text("🔄 *Resolving username to Facebook ID...*", parse_mode='Markdown')
-        search_param = resolve_username_to_id(query)
+        resolved_id = resolve_username_to_id(query)
+        if resolved_id:
+            search_param = resolved_id
+            await processing_msg.edit_text(f"✅ *Resolved ID:* `{search_param}`\n🔄 *Scanning database...*", parse_mode='Markdown')
+        else:
+            await processing_msg.edit_text("❌ *Failed to resolve username to FB ID. Please enter ID manually.*", parse_mode='Markdown')
+            return
 
-    # Protection Check
     if search_param in PROTECTED_IDS or query in PROTECTED_IDS:
         await processing_msg.edit_text("🛑 *User data protect by Toxic Security*", parse_mode='Markdown')
         await send_log(context, f"Blocked Query (Protected Data):\nUser: @{user.username}\nAttempted: {query}")
         return
 
-    # API Request
     try:
         payload = {"key": API_KEY, "query": search_param}
-        response = requests.get(API_URL, params=payload, timeout=15)
+        response = requests.get(API_URL, params=payload, timeout=20)
         
         if response.status_code == 200:
             data = response.json()
-            # Assuming the JSON format you provided
             result_text = (
                 f"✅ *MATCH FOUND IN DATABASE*\n"
                 f"━━━━━━━━━━━━━━━━━━━━\n"
@@ -110,7 +117,7 @@ async def handle_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await processing_msg.edit_text(result_text, parse_mode='Markdown', reply_markup=InlineKeyboardMarkup(keyboard))
             await send_log(context, f"Success:\nSent data for {search_param} to @{user.username}")
         else:
-            await processing_msg.edit_text("❌ *No matching records found in the database.*", parse_mode='Markdown')
+            await processing_msg.edit_text("*No matching records found in the database.*", parse_mode='Markdown')
 
     except Exception as e:
         await processing_msg.edit_text("⚠️ *API Offline or Connection Timeout.*", parse_mode='Markdown')
@@ -118,14 +125,11 @@ async def handle_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
-    
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("protect", protect_user))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_query))
-    
-    print("Toxic Security Bot Started...")
     app.run_polling()
 
 if __name__ == '__main__':
     main()
-
+                                       
