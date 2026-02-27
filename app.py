@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-STATIC_API_KEY = "toxic-key-test" 
+STATIC_API_KEY = "toxic" 
 DB_FILES = ['db.json']
 
 @app.route('/api', methods=['GET'])
