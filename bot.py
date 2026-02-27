@@ -17,7 +17,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 async def send_log(context: ContextTypes.DEFAULT_TYPE, message: str):
     try:
-        await context.bot.send_message(chat_id=LOG_GROUP_ID, text=f"🔒 [SYSTEM LOG]\n{message}")
+        await context.bot.send_message(chat_id=LOG_GROUP_ID, text=f"🔒 [SYSTEM LOG]\n\n{message}")
     except Exception as e:
         logging.error(f"Failed to send log: {e}")
 
@@ -41,7 +41,7 @@ def resolve_username_to_id(username: str) -> str:
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    await send_log(context, f"User Started Bot:\nName: {user.full_name}\nUsername: @{user.username}\nID: {user.id}")
+    await send_log(context, f"User Started Bot:\n\nName: {user.full_name}\nUsername: @{user.username}\nID: {user.id}")
 
     keyboard = [
         [InlineKeyboardButton("🔍 Lookup Target", callback_data='lookup')],
@@ -53,7 +53,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"⚡ *TOXIC OSINT SECURITY BOT*\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"Welcome, {user.first_name}! This is a secure environment.\n\n"
-        "Input any of the following to scan the database:\n"
+        "Input any of the following to scan the database:\n\n"
         "👤 *FB Username* (e.g., markzuckerberg)\n"
         "🆔 *FB ID* (e.g., 100018888...)\n"
         "📞 *Phone Number* (e.g., 9876543210)\n"
@@ -69,7 +69,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if query.data == 'clear':
         await query.message.delete()
     elif query.data == 'lookup':
-        await query.message.reply_text("Provide a target identifier (Username, ID, Phone, or Email) to begin the scan.\n_Use /find in groups._", parse_mode='Markdown')
+        await query.message.reply_text("Provide a target identifier (Username, ID, Phone, or Email) to begin the scan.\n\n_Use /find in groups._", parse_mode='Markdown')
 
 async def protect_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != OWNER_ID:
@@ -84,12 +84,11 @@ async def protect_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ ID `{target_id}` is now securely protected.")
     await send_log(context, f"Admin Protected ID: {target_id}")
 
-
 async def execute_search(update: Update, context: ContextTypes.DEFAULT_TYPE, query: str):
     user = update.effective_user
     clean_query = query.replace("+", "").replace(" ", "").strip()
     
-    await send_log(context, f"Query Executed:\nUser: @{user.username} ({user.id})\nInput: {query}")
+    await send_log(context, f"Query Executed:\n\nUser: @{user.username} ({user.id})\nInput: {query}")
     processing_msg = await update.message.reply_text("📡 *ESTABLISHING SECURE UPLINK...*", parse_mode='Markdown')
 
     search_param = ""
@@ -118,7 +117,7 @@ async def execute_search(update: Update, context: ContextTypes.DEFAULT_TYPE, que
 
     if search_param in PROTECTED_IDS or query in PROTECTED_IDS:
         await processing_msg.edit_text("🛡️ *SECURITY BREACH BLOCKED*\n\n_Target data is strictly protected by Toxic Protocol. Access Denied._", parse_mode='Markdown')
-        await send_log(context, f"Blocked Query Attempt:\n\nUser: @{user.username}\n\nTarget: {query}")
+        await send_log(context, f"Blocked Query Attempt:\n\nUser: @{user.username}\nTarget: {query}")
         return
 
     try:
@@ -143,7 +142,7 @@ async def execute_search(update: Update, context: ContextTypes.DEFAULT_TYPE, que
             )
             keyboard = [[InlineKeyboardButton("🗑️ Close", callback_data='clear')]]
             await processing_msg.edit_text(result_text, parse_mode='Markdown', reply_markup=InlineKeyboardMarkup(keyboard))
-            await send_log(context, f"Data Successfully Retrieved:\n\nTarget: {search_param}\n\nRequested by: @{user.username}")
+            await send_log(context, f"Data Successfully Retrieved:\n\nTarget: {search_param}\nRequested by: @{user.username}")
         else:
             await processing_msg.edit_text("📭 *NO RECORDS FOUND*\n\n_Target does not exist in the current database index._", parse_mode='Markdown')
 
@@ -173,7 +172,7 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     await execute_search(update, context, query)
 
 def main():
-    t_request = HTTPXRequest(connection_pool_size=20, read_timeout=20)
+    t_request = HTTPXRequest(connection_pool_size=20, read_timeout=100.0, write_timeout=100.0, connect_timeout=50.0)
     app = Application.builder().token(BOT_TOKEN).request(t_request).build()
     
     app.add_handler(CommandHandler("start", start))
@@ -182,7 +181,7 @@ def main():
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, private_text_handler))
     
-    print("Toxic Security Bot is running smoothly with Smart Routing...")
+    print("Toxic Security Bot is running smoothly...")
     app.run_polling()
 
 if __name__ == '__main__':
