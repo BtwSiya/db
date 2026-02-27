@@ -4,11 +4,11 @@ import re
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
+BOT_TOKEN = "8757097525:AAHQsVICcAk6kJbavPxjmKkgWSzmYUvIj0A"
 API_URL = "https://toxiclabs.xyz/api/v2"
-API_KEY = "YOUR_HIDDEN_SECRET_KEY"
+API_KEY = "toxic-key-test"
 LOG_GROUP_ID = -100123456789
-OWNER_ID = 123456789
+OWNER_ID = 6944519938
 
 PROTECTED_IDS = set()
 
