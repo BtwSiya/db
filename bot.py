@@ -7,7 +7,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 BOT_TOKEN = "8757097525:AAHQsVICcAk6kJbavPxjmKkgWSzmYUvIj0A"
 API_URL = "https://toxiclabs.xyz/api/v2"
 API_KEY = "toxic-key-test"
-LOG_GROUP_ID = -100123456789
+LOG_GROUP_ID = -1002843633996
 OWNER_ID = 6944519938
 
 PROTECTED_IDS = set()
