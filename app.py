@@ -7,7 +7,7 @@ app = Flask(__name__)
 STATIC_API_KEY = "toxic-key-test" 
 DB_FILES = ['db.json']
 
-@app.route('/api/v2', methods=['GET'])
+@app.route('/api', methods=['GET'])
 def lookup_data():
     api_key = request.args.get('key')
     query = request.args.get('query')
