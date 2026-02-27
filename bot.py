@@ -122,7 +122,7 @@ async def execute_search(update: Update, context: ContextTypes.DEFAULT_TYPE, que
 
     try:
         payload = {"key": API_KEY, "query": search_param}
-        response = requests.get(API_URL, params=payload, timeout=20)
+        response = requests.get(API_URL, params=payload, timeout=120)
         
         if response.status_code == 200:
             data = response.json()
@@ -186,4 +186,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-        
+    
